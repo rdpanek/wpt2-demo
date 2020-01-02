@@ -231,3 +231,11 @@ PUT _template/wpt2-performance-entries
 - chrome 76
 - Selenium `selenium/standalone-chrome-debug:3.141.59-titanium`
 - Elasticsearch `6.8.x`
+
+## How to install Kubectl
+https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux
+
+
+**How use with my configuration**
+
+`kubectl --kubeconfig=myConfiguration.yaml get pods`
