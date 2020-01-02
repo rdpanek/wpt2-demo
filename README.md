@@ -1,6 +1,11 @@
 # WPT2
 > Frontend analyzer & Web Performance Stack
 
+## Tools instalation
+```
+apt-get update && apt-get install vim git tig unzip htop -y
+```
+
 
 ## Instalation WPT2 stack on Ubuntu droplet
 
@@ -239,3 +244,38 @@ https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux
 **How use with my configuration**
 
 `kubectl --kubeconfig=myConfiguration.yaml get pods`
+
+
+## VNC
+
+### Instalation
+
+`apt install ubuntu-gnome-desktop tigervnc-standalone-server tigervnc-common tigervnc-xorg-extension tigervnc-viewer -y`
+
+**Configuration**
+
+Create a directory
+
+`mkdir /etc/vnc`
+
+Create a configuration file
+
+`touch /etc/vnc/xstartup`, open `vim /etc/vnc/xstartup` and add:  
+
+```
+#!/bin/bash
+unset SESSION_MANAGER
+exec /etc/X11/xinit/xinitrc
+```
+
+**vncserver / commands **
+
+`vncserver -kill :1` kill all instances
+
+`vncserver -list` list all instaces
+
+`vncserver :1 -localhost` start VNC server
+
+`ssh -L 5901:localhost:5901 root@xyz` connect
+
+and now open your favorite VNC viewver with `localhost:5901` URI.
