@@ -28,7 +28,7 @@ docker run --name kibana -d --link elastic:elasticsearch -p 5601:5601 docker.ela
 
 ### Selenium
 ```
-docker run -d -p 4444:4444 -v /dev/shm:/dev/shm selenium/standalone-chrome:3.141.59-yttrium
+docker run --name selen -d -p 4444:4444 -v /dev/shm:/dev/shm selenium/standalone-chrome:3.141.59-yttrium
 ```
 
 ### Install Google Chrome
