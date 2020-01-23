@@ -1,0 +1,165 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: performance-testing
+spec:
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 2
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: wpt2
+            image: rdpanek/wpt2:k.2.16
+            env:
+            - name: GIT_TESTS_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: git.test.path
+            - name: GIT_TESTS
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: git.repository
+            - name: GIT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: git.host
+            - name: GIT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: git.port
+            - name: GIT_REVISION
+              value: "606e0c2"
+            - name: SPEC
+              value: "performance-test/performance-test.js"
+            - name: ELASTIC_CLUSTER
+              valueFrom:
+                secretKeyRef:
+                  name: secret-elastic
+                  key: cluster
+            - name: ELASTIC_HTTP_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: secret-elastic
+                  key: httpAuth
+            - name: WAIT_FOR_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: wait.for.timeout
+            - name: BASE_URL
+              value: "https://www.performance-testing.cz"
+            - name: HOST_NAME
+              value: "localhost"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: log.level
+            - name: ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: tag
+            - name: PT_AUDIT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-analyzer
+                  key: pt.audit
+            - name: RESPONSE_INTERCEPT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-analyzer
+                  key: response.intercept
+            - name: REQUEST_INTERCEPT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-analyzer
+                  key: request.intercept
+            - name: CONSOLE_INTERCEPT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-analyzer
+                  key: console.intercept
+            - name: WEBSOCKETS_INTERCEPT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-analyzer
+                  key: websockets.intercept
+            - name: ATTACHMENTS
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-aws
+                  key: attachments
+            - name: AWS_S3_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-aws
+                  key: aws.s3.region
+            - name: AWS_S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-aws
+                  key: aws.s3.bucket
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "200m"
+              limits:
+                memory: "400Mi"
+                cpu: "300m"
+            imagePullPolicy: "Always"
+            volumeMounts:
+              - mountPath: /secret
+                name: sec-github
+                readOnly: true
+          - name: selenium
+            image: selenium/standalone-chrome:3.141.59-titanium
+            ports:
+              - containerPort: 5900
+              - containerPort: 4444
+            resources:
+              requests:
+                memory: "1000Mi"
+                cpu: "1200m"
+              limits:
+                memory: "1200Mi"
+                cpu: "1500m"
+            imagePullPolicy: "IfNotPresent"
+            volumeMounts:
+              - mountPath: "/dev/shm"
+                name: "dshm"
+            livenessProbe:
+              httpGet:
+                path: /wd/hub
+                port: 4444
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+            readinessProbe:
+              httpGet:
+                path: /wd/hub
+                port: 4444
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+          restartPolicy: "Never"
+          volumes:
+            - name: sec-github
+              secret:
+                secretName: sec-github
+            - name: secret-elastic
+              secret:
+                secretName: secret-elastic
+            - name: secret-aws
+              secret:
+                secretName: secret-aws
+            - name: "dshm"
+              emptyDir:
+                medium: "Memory"
+          imagePullSecrets:
+            - name: regcred

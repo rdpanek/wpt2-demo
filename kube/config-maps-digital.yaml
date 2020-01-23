@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wpt2-runner
+  namespace: default
+data:
+  log.level: error
+  tag: aws
+  git.test.path: /tmp/wdio-tests
+  git.repository: git@github.com:rdpanek/wpt2-tests.git
+  git.host: github.com
+  git.port: "22"
+  wait.for.timeout: "60000"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wpt2-analyzer
+  namespace: default
+data:
+  pt.audit: allow
+  response.intercept: allow
+  request.intercept: allow
+  console.intercept: allow
+  websockets.intercept: "no"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wpt2-aws
+  namespace: default
+data:
+  attachments: "allow"
+  aws.s3.region: eu-central-1
+  aws.s3.bucket: 946791837062-perftest
