@@ -7,7 +7,7 @@ data:
   log.level: error
   tag: aws
   git.test.path: /tmp/wdio-tests
-  git.repository: git@github.com:rdpanek/wpt2-tests.git
+  git.repository: git@github.com:rdpanek/wpt2-demo.git
   git.host: github.com
   git.port: "22"
   wait.for.timeout: "60000"
@@ -18,11 +18,12 @@ metadata:
   name: wpt2-analyzer
   namespace: default
 data:
-  pt.audit: allow
+  pt.audit: "no"
   response.intercept: allow
   request.intercept: allow
   console.intercept: allow
   websockets.intercept: "no"
+  memory.intercept: allow
 ---
 apiVersion: v1
 kind: ConfigMap
