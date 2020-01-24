@@ -35,7 +35,7 @@ spec:
                   name: wpt2-runner
                   key: git.port
             - name: GIT_REVISION
-              value: "e08f4f8"
+              value: "16e24a5"
             - name: SPEC
               value: "tipsport/smoke.js"
             - name: ELASTIC_CLUSTER
@@ -97,6 +97,11 @@ spec:
                 configMapKeyRef:
                   name: wpt2-aws
                   key: attachments
+            - name: MEMORY_INTERCEPT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-analyzer
+                  key: memory.intercept
             - name: AWS_S3_REGION
               valueFrom:
                 configMapKeyRef:
