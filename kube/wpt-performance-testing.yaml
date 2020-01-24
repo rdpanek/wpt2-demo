@@ -13,7 +13,7 @@ spec:
           containers:
           - name: wpt2
             image: dan/framework:1.0
-            command: ['--spec', '/test/performanceTesting/smoke.js', '--baseUrl', 'https://www.performance-testing.cz', '--hostname', 'selen', '--logLevel', 'error']
+            args: ['--spec', '/test/performanceTesting/smoke.js', '--baseUrl', 'https://www.performance-testing.cz', '--hostname', 'selen', '--logLevel', 'error']
             env:
             - name: ENV
               value: "minikube"
@@ -47,10 +47,6 @@ spec:
                 memory: "400Mi"
                 cpu: "300m"
             imagePullPolicy: "Always"
-            volumeMounts:
-              - mountPath: /secret
-                name: sec-github
-                readOnly: true
           - name: selenium
             image: selenium/standalone-chrome:3.141.59-titanium
             ports:
