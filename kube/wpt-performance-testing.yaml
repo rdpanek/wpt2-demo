@@ -1,0 +1,91 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: performance-testing
+spec:
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 2
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: wpt2
+            image: dan/framework:1.0
+            command: ['--spec', '/test/performanceTesting/smoke.js', '--baseUrl', 'https://www.performance-testing.cz', '--hostname', 'selen', '--logLevel', 'error']
+            env:
+            - name: ENV
+              value: "minikube"
+            - name: ELASTIC_CLUSTER
+              valueFrom:
+                secretKeyRef:
+                  name: secret-elastic
+                  key: cluster
+            - name: WAIT_FOR_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: wait.for.timeout
+            - name: BASE_URL
+              value: "https://www.performance-testing.cz"
+            - name: HOST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: host.name
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-runner
+                  key: log.level
+            resources:
+              requests:
+                memory: "300Mi"
+                cpu: "200m"
+              limits:
+                memory: "400Mi"
+                cpu: "300m"
+            imagePullPolicy: "Always"
+            volumeMounts:
+              - mountPath: /secret
+                name: sec-github
+                readOnly: true
+          - name: selenium
+            image: selenium/standalone-chrome:3.141.59-titanium
+            ports:
+              - containerPort: 5900
+              - containerPort: 4444
+            resources:
+              requests:
+                memory: "1000Mi"
+                cpu: "1200m"
+              limits:
+                memory: "1200Mi"
+                cpu: "1500m"
+            imagePullPolicy: "IfNotPresent"
+            volumeMounts:
+              - mountPath: "/dev/shm"
+                name: "dshm"
+            livenessProbe:
+              httpGet:
+                path: /wd/hub
+                port: 4444
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+            readinessProbe:
+              httpGet:
+                path: /wd/hub
+                port: 4444
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+          restartPolicy: "Never"
+          volumes:
+            - name: secret-elastic
+              secret:
+                secretName: secret-elastic
+            - name: "dshm"
+              emptyDir:
+                medium: "Memory"
+          imagePullSecrets:
+            - name: regcred
