@@ -12,7 +12,7 @@ spec:
         spec:
           containers:
           - name: wpt2
-            image: rdpanek/wpt2:k.2.16
+            image: rdpanek/wpt2:k.2.18
             env:
             - name: GIT_TESTS_PATH
               valueFrom:
@@ -35,7 +35,7 @@ spec:
                   name: wpt2-runner
                   key: git.port
             - name: GIT_REVISION
-              value: "aa3d4c7"
+              value: "16e24a5"
             - name: SPEC
               value: "brno-zidenice/brno-zidenice.js"
             - name: ELASTIC_CLUSTER
@@ -97,6 +97,11 @@ spec:
                 configMapKeyRef:
                   name: wpt2-aws
                   key: attachments
+            - name: MEMORY_INTERCEPT
+              valueFrom:
+                configMapKeyRef:
+                  name: wpt2-analyzer
+                  key: memory.intercept
             - name: AWS_S3_REGION
               valueFrom:
                 configMapKeyRef:
