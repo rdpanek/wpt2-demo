@@ -12,8 +12,8 @@ spec:
         spec:
           containers:
           - name: wpt2
-            image: dan/framework:1.0
-            args: ['--spec', '/test/performanceTesting/smoke.js', '--baseUrl', 'https://www.performance-testing.cz', '--hostname', 'selen', '--logLevel', 'error']
+            image: rdpanek/framework:1.0
+            args: ['--spec', '/test/performanceTesting/smoke.js', '--baseUrl', 'https://www.performance-testing.cz', '--hostname', 'localhost', '--logLevel', 'error']
             env:
             - name: ENV
               value: "minikube"
@@ -76,6 +76,7 @@ spec:
               initialDelaySeconds: 10
               timeoutSeconds: 5
           restartPolicy: "Never"
+          hostNetwork: true
           volumes:
             - name: secret-elastic
               secret:
